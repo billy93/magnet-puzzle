@@ -6,6 +6,8 @@ N = 5
 
 # Function to read board from file
 def readBoard(file):
+    global M
+    global N
     f = open(file, "r")
     lines = f.readlines()
 
@@ -69,7 +71,7 @@ def printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, ori
     for i in range(M):
         if i == 0:
             print("---", end="")
-            for x in range(len(positivesRow)):
+            for x in range(len(positivesColumn) + 1):
                 print("|---", end="")
             print()
         else:
@@ -114,7 +116,7 @@ def printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, ori
 
         if i == (M - 1):
             print("---", end="");
-            for x in range(len(positivesRow)):
+            for x in range(len(positivesColumn) + 1):
                 print("|---", end="")
             print();
 
@@ -143,13 +145,15 @@ positivesRow, negativesRow, positivesColumn, negativesColumn, orientations, work
 # Part B: Helper functions (25 marks)
 # Task 1: Safe placing (10 marks)
 def canPlacePole(row, col, pole, workingBoard):
-    if workingBoard[row-1][col] != pole and workingBoard[row][col-1] != pole and workingBoard[row+1][col] != pole and workingBoard[row][col+1] != pole:
+    if workingBoard[row - 1][col] != pole and workingBoard[row][col - 1] != pole and workingBoard[row + 1][
+        col] != pole and workingBoard[row][col + 1] != pole:
         return True
     else:
         return False
 
-#print(canPlacePole(1, 1, '+', workingBoard))
-#print(canPlacePole(2, 3, '-', workingBoard))
+
+# print(canPlacePole(1, 1, '+', workingBoard))
+# print(canPlacePole(2, 3, '-', workingBoard))
 # print(canPlacePole(2, 0, '+', workingBoard))
 
 
@@ -161,19 +165,19 @@ def getBlockOrientation(row, col, orientations):
 
     if orientations[row][col] == 'T':
         oppositeRow = row
-        oppositeCol = row+1
+        oppositeCol = row + 1
         resultOrientation = 'TB'
     elif orientations[row][col] == 'B':
-        oppositeRow = row-1
+        oppositeRow = row - 1
         oppositeCol = row
         resultOrientation = 'TB'
     elif orientations[row][col] == 'R':
         oppositeRow = col
-        oppositeCol = col-1
+        oppositeCol = col - 1
         resultOrientation = 'LR'
     elif orientations[row][col] == 'L':
         oppositeRow = col
-        oppositeCol = col+1
+        oppositeCol = col + 1
         resultOrientation = 'LR'
 
     if oppositeCol < oppositeRow:
@@ -183,7 +187,8 @@ def getBlockOrientation(row, col, orientations):
 
     return resultOrientation, oppositeRow, oppositeCol
 
-#Test it
+
+# Test it
 # resultOrientation, oppositeRow, oppositeCol = getBlockOrientation (5, 2, orientations)
 # print (resultOrientation, oppositeRow, oppositeCol)
 
@@ -232,6 +237,20 @@ def randomPoleFlip(alist, percentage, flipValue):
 def orientationsGenerator(M, N):
     initMatrix = [[0 for x in range(N)] for y in range(M)]
 
+    # initMatrix = [
+    #     ['L', 'R', 'T', 'T', 'T'],
+    #     ['L', 'R', 'B', 'B', 'B'],
+    #     ['T', 'T', 'T', 'T', 'T'],
+    #     ['B', 'B', 'B', 'B', 'B']
+    # ]
+
+    #  initMatrix = [
+    #      ['L', 'R', 'L', 'R', 'T'],
+    #      ['L', 'R', 'T', 'T', 'B'],
+    #      ['L', 'R', 'B', 'B', 'T'],
+    #      ['L', 'R', 'L', 'R', 'B']
+    # ]
+
     first = 'T'
     for i in range(M):
         for j in range(N):
@@ -241,49 +260,86 @@ def orientationsGenerator(M, N):
         elif first == 'B':
             first = 'T'
 
+    # positivesColumn = [-1, -1, -1, -1, -1]
+    # positivesRow = [-1, -1, -1, -1]
+    # negativesColumn = [-1, -1, -1, -1, -1]
+    # negativesRow = [-1, -1, -1, -1]
+    # workingBoard = [
+    #     ['E', 'E', 'E', 'E', 'E'],
+    #     ['E', 'E', 'E', 'E', 'E'],
+    #     ['E', 'E', 'E', 'E', 'E'],
+    #     ['E', 'E', 'E', 'E', 'E']
+    # ]
+    # printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, initMatrix, workingBoard)
+    # initMatrix = shuffle(initMatrix)
+    # printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, initMatrix, workingBoard)
 
-    shuffle(initMatrix)
-
+    for i in range(100):
+        initMatrix = shuffle(initMatrix)
+        # printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, initMatrix, workingBoard)
 
     return initMatrix
 
+
 def shuffle(initMatrix):
-    # row = random.randint(0, M - 1)
-    # column = random.randint(0, N - 1)
-    row = 3
-    column = 3
+    row = random.randint(0, M - 1)
+    column = random.randint(0, N - 1)
+
+    # row = 3
+    # column = 3
+    # Debug selected row and column to shuffle
     resultOrientation, oppositeRow, oppositeCol = getBlockOrientation(row, column, initMatrix)
-    print(str(oppositeRow)+" | "+str(oppositeCol))
-    # resultOrientation, oppositeRow, oppositeCol = getBlockOrientation(0, 0, initMatrix)
+    # print("ROW : " + str(row) + " | COLUMN : " + str(row))
+    # print("resultOrientation : " + resultOrientation)
+    # print("oppositeRow : " + str(oppositeRow))
+    # print("oppositeCol : " + str(oppositeCol))
 
     if resultOrientation == 'TB':
         if column == 0:
             # check right block
-            resultOrientation2, oppositeRow2, oppositeCol2 = getBlockOrientation(oppositeRow, column+1, initMatrix)
-            print(str(oppositeRow2) + " | " + str(oppositeCol2))
-
-            # if resultOrientation == 'TB' and resultOrientation2 == 'TB':
-                # initMatrix[row][column] = 'L'
-                # initMatrix[row][column+1] = 'R'
-                # initMatrix[row+1][column] = 'L'
-                # initMatrix[row+1][column+1] = 'R'
+            resultOrientation2, oppositeRow2, oppositeCol2 = getBlockOrientation(oppositeRow, column + 1, initMatrix)
+            if resultOrientation == 'TB' and resultOrientation2 == 'TB' and oppositeRow == oppositeRow2 and oppositeCol == oppositeCol2:
+                initMatrix[oppositeRow][column] = 'L'
+                initMatrix[oppositeCol][column] = 'L'
+                initMatrix[oppositeRow2][column + 1] = 'R'
+                initMatrix[oppositeCol2][column + 1] = 'R'
         elif column > 0:
             # check left block
-            resultOrientation2, oppositeRow2, oppositeCol2 = getBlockOrientation(oppositeRow, column-1, initMatrix)
-            print(str(oppositeRow2) + " | " + str(oppositeCol2))
+            resultOrientation2, oppositeRow2, oppositeCol2 = getBlockOrientation(oppositeRow, column - 1, initMatrix)
+            if resultOrientation == 'TB' and resultOrientation2 == 'TB' and oppositeRow == oppositeRow2 and oppositeCol == oppositeCol2:
+                initMatrix[oppositeRow][column] = 'R'
+                initMatrix[oppositeCol][column] = 'R'
+                initMatrix[oppositeRow2][column - 1] = 'L'
+                initMatrix[oppositeCol2][column - 1] = 'L'
+    elif resultOrientation == 'LR':
+        if row == 0:
+            # check bottom block
+            resultOrientation2, oppositeRow2, oppositeCol2 = getBlockOrientation(row + 1, oppositeRow, initMatrix)
+            if resultOrientation == 'LR' and resultOrientation2 == 'LR' and oppositeRow == oppositeRow2 and oppositeCol == oppositeCol2:
+                initMatrix[row][oppositeRow] = 'T'
+                initMatrix[row][oppositeCol] = 'T'
+                initMatrix[row + 1][oppositeRow2] = 'B'
+                initMatrix[row + 1][oppositeCol2] = 'B'
+        elif row > 0:
+            # check top block
+            resultOrientation2, oppositeRow2, oppositeCol2 = getBlockOrientation(row - 1, oppositeRow, initMatrix)
+            if resultOrientation == 'LR' and resultOrientation2 == 'LR' and oppositeRow == oppositeRow2 and oppositeCol == oppositeCol2:
+                initMatrix[row][oppositeRow] = 'B'
+                initMatrix[row][oppositeCol] = 'B'
+                initMatrix[row - 1][oppositeRow2] = 'T'
+                initMatrix[row - 1][oppositeCol2] = 'T'
 
-            # if resultOrientation == 'TB' and resultOrientation2 == 'TB':
-            #     initMatrix[row][column] = 'L'
-            #     initMatrix[row][column+1] = 'R'
-            #     initMatrix[row+1][column] = 'L'
-            #     initMatrix[row+1][column+1] = 'R'
-
+    # print("resultOrientation2 : " + resultOrientation2)
+    # print("oppositeRow2 : " + str(oppositeRow2))
+    # print("oppositeCol2 : " + str(oppositeCol2))
 
     return initMatrix
+
 
 M = 4
 N = 5
 print(orientationsGenerator(M, N))
+
 
 # Task 2: Filling board with magnets (10 marks)
 def fillWithMagnets(orientations):
