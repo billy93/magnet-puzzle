@@ -160,7 +160,7 @@ def canPlacePole(row, col, pole, workingBoard):
         else:
             vals.append(False)
 
-    if row+1 < numrows:
+    if row + 1 < numrows:
         if workingBoard[row + 1][col] != pole:
             vals.append(True)
         else:
@@ -244,9 +244,10 @@ def poleCount(rowOrCol, index, pole, workingBoard):
 
 
 # Test it
-# print(poleCount ('r',5,'+', workingBoard))
-# print(poleCount ('r',4,'-', workingBoard))
-# print(poleCount ('c',4,'-', workingBoard))
+# print(poleCount('r', 5, '+', workingBoard))
+# print(poleCount('r', 4, '-', workingBoard))
+# print(poleCount('c', 4, '-', workingBoard))
+
 
 # Task 4: Random Magnetic Pole Distribution (5 marks)
 def randomPoleFlip(alist, percentage, flipValue):
@@ -393,13 +394,13 @@ def fillWithMagnets(orientations):
                 if orientations[i][j] == 'L':
                     if canPlacePole(i, j, '+', workingBoard):
                         workingBoard[i][j] = '+'
-                        if canPlacePole(i, j+1, '-', workingBoard):
-                            workingBoard[i][j+1] = '-'
+                        if canPlacePole(i, j + 1, '-', workingBoard):
+                            workingBoard[i][j + 1] = '-'
                 elif orientations[i][j] == 'T':
                     if canPlacePole(i, j, '+', workingBoard):
                         workingBoard[i][j] = '+'
-                        if canPlacePole(i+1, j, '-', workingBoard):
-                            workingBoard[i+1][j] = '-'
+                        if canPlacePole(i + 1, j, '-', workingBoard):
+                            workingBoard[i + 1][j] = '-'
     for i in range(M):
         for j in range(N):
             if workingBoard[i][j] == 0:
@@ -408,19 +409,53 @@ def fillWithMagnets(orientations):
 
 
 # Test fill with magnets
-positivesColumn = [-1, -1, -1, -1, -1]
-negativesColumn = [-1, -1, -1, -1, -1]
-positivesRow = [-1, -1, -1, -1]
-negativesRow = [-1, -1, -1, -1]
-M = 4
-N = 5
-orientations = orientationsGenerator(M, N)
-workingBoard = fillWithMagnets(orientations)
-printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
+# positivesColumn = [-1, -1, -1, -1, -1]
+# negativesColumn = [-1, -1, -1, -1, -1]
+# positivesRow = [-1, -1, -1, -1]
+# negativesRow = [-1, -1, -1, -1]
+# M = 4
+# N = 5
+# orientations = orientationsGenerator(M, N)
+# workingBoard = fillWithMagnets(orientations)
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
 
 # Task 3: Generating random new board (10 marks)
 def randomNewBoard(M, N):
-    pass
+    orientations = orientationsGenerator(M, N)
+    workingBoard = fillWithMagnets(orientations)
+
+    # Replace empty board with X
+    for i in range(M):
+        for j in range(N):
+            if workingBoard[i][j] == 'E':
+                workingBoard[i][j] = 'X'
+
+    # Get Count put in array
+    positivesRow = []
+    negativesRow = []
+    negativesColumn = []
+    positivesColumn = []
+    for i in range(M):
+        positivesRow.append(poleCount('r', i, '+', workingBoard))
+        negativesRow.append(poleCount('r', i, '-', workingBoard))
+
+    for j in range(N):
+        positivesColumn.append(poleCount('c', j, '+', workingBoard))
+        negativesColumn.append(poleCount('c', j, '-', workingBoard))
+
+    # Random 50% flip
+    randomPoleFlip(positivesRow, 50, -1)
+    randomPoleFlip(negativesRow, 50, -1)
+    randomPoleFlip(negativesColumn, 50, -1)
+    randomPoleFlip(positivesColumn, 50, -1)
+
+    return positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard
+
+
+M = 6
+N = 5
+positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard = randomNewBoard(M, N)
+printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
 
 ######################################################
 # Part D: Decomposition, Variable names and code Documentation (10 marks)
