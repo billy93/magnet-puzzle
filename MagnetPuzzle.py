@@ -53,6 +53,12 @@ def readBoard(file):
     return positivesRow, negativesRow, positivesColumn, negativesColumn, orientations, workingBoard
 
 
+# Part A: Representation and display (15 marks)
+# Task 1: Initial setup (5 marks)
+# Test it
+positivesRow, negativesRow, positivesColumn, negativesColumn, orientations, workingBoard = readBoard('config.txt')
+
+
 # Function to print board
 def printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard):
     global M
@@ -138,12 +144,8 @@ def printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, ori
     print(" - ");
 
 
-# Part A: Representation and display (15 marks)
-# Task 1: Initial setup (5 marks)
-positivesRow, negativesRow, positivesColumn, negativesColumn, orientations, workingBoard = readBoard('config.txt')
-
-
 # Task 2: Display (10 marks)
+# Test it
 # printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
 
 ######################################################
@@ -185,7 +187,7 @@ def canPlacePole(row, col, pole, workingBoard):
     #     return False
     return all(vals)
 
-
+# Test it
 # print(canPlacePole(1, 1, '+', workingBoard))
 # print(canPlacePole(2, 3, '-', workingBoard))
 # print(canPlacePole(2, 0, '+', workingBoard))
@@ -309,13 +311,13 @@ def orientationsGenerator(M, N):
     # initMatrix = shuffle(initMatrix)
     # printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, initMatrix, workingBoard)
 
-    for i in range(100):
+    for i in range(1000):
         initMatrix = shuffle(initMatrix)
         # printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, initMatrix, workingBoard)
 
     return initMatrix
 
-
+# Used in orientationGenerator to 1000 times shuffle matrix
 def shuffle(initMatrix):
     row = random.randint(0, M - 1)
     column = random.randint(0, N - 1)
@@ -370,7 +372,7 @@ def shuffle(initMatrix):
 
     return initMatrix
 
-
+# Test it
 # M = 4
 # N = 5
 # print(orientationsGenerator(M, N))
@@ -451,7 +453,7 @@ def randomNewBoard(M, N):
 
     return positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard
 
-
+# Test it
 M = 6
 N = 5
 positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard = randomNewBoard(M, N)
