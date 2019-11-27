@@ -55,6 +55,11 @@ def readBoard(file):
 
 # Function to print board
 def printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard):
+    global M
+    global N
+
+    # print('row : '+str(M)+' | column : '+str(N))
+    # print('positive column : '+str(len(positivesColumn)))
     print(" + |", end="");
     for p in range(len(positivesColumn)):
         val = positivesColumn[p];
@@ -145,11 +150,40 @@ positivesRow, negativesRow, positivesColumn, negativesColumn, orientations, work
 # Part B: Helper functions (25 marks)
 # Task 1: Safe placing (10 marks)
 def canPlacePole(row, col, pole, workingBoard):
-    if workingBoard[row - 1][col] != pole and workingBoard[row][col - 1] != pole and workingBoard[row + 1][
-        col] != pole and workingBoard[row][col + 1] != pole:
-        return True
-    else:
-        return False
+    numrows = len(workingBoard)
+    numcols = len(workingBoard[0])
+
+    vals = []
+    if row > 0:
+        if workingBoard[row - 1][col] != pole:
+            vals.append(True)
+        else:
+            vals.append(False)
+
+    if row+1 < numrows:
+        if workingBoard[row + 1][col] != pole:
+            vals.append(True)
+        else:
+            vals.append(False)
+
+    if col > 0:
+        if workingBoard[row][col - 1] != pole:
+            vals.append(True)
+        else:
+            vals.append(False)
+
+    if col + 1 < numcols:
+        if workingBoard[row][col + 1] != pole:
+            vals.append(True)
+        else:
+            vals.append(False)
+
+    # if (workingBoard[row - 1][col] != pole) and workingBoard[row][col - 1] != pole and workingBoard[row + 1][
+    #     col] != pole and workingBoard[row][col + 1] != pole:
+    #     return True
+    # else:
+    #     return False
+    return all(vals)
 
 
 # print(canPlacePole(1, 1, '+', workingBoard))
@@ -336,15 +370,53 @@ def shuffle(initMatrix):
     return initMatrix
 
 
-M = 4
-N = 5
-print(orientationsGenerator(M, N))
+# M = 4
+# N = 5
+# print(orientationsGenerator(M, N))
 
 
 # Task 2: Filling board with magnets (10 marks)
 def fillWithMagnets(orientations):
-    pass
+    global N
+    global M
 
+    workingBoard = [[0 for x in range(N)] for y in range(M)]
+    for i in range(M):
+        for j in range(N):
+            resultOrientation, oppositeRow, oppositeCol = getBlockOrientation(i, j, orientations)
+            # print("resultOrientation : " + resultOrientation)
+            # print("oppositeRow : " + str(oppositeRow))
+            # print("oppositeCol : " + str(oppositeCol))
+            # canPlacePole(i, j, '+', workingBoard)
+
+            if workingBoard[i][j] == 0:
+                if orientations[i][j] == 'L':
+                    if canPlacePole(i, j, '+', workingBoard):
+                        workingBoard[i][j] = '+'
+                        if canPlacePole(i, j+1, '-', workingBoard):
+                            workingBoard[i][j+1] = '-'
+                elif orientations[i][j] == 'T':
+                    if canPlacePole(i, j, '+', workingBoard):
+                        workingBoard[i][j] = '+'
+                        if canPlacePole(i+1, j, '-', workingBoard):
+                            workingBoard[i+1][j] = '-'
+    for i in range(M):
+        for j in range(N):
+            if workingBoard[i][j] == 0:
+                workingBoard[i][j] = 'E'
+    return workingBoard
+
+
+# Test fill with magnets
+positivesColumn = [-1, -1, -1, -1, -1]
+negativesColumn = [-1, -1, -1, -1, -1]
+positivesRow = [-1, -1, -1, -1]
+negativesRow = [-1, -1, -1, -1]
+M = 4
+N = 5
+orientations = orientationsGenerator(M, N)
+workingBoard = fillWithMagnets(orientations)
+printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
 
 # Task 3: Generating random new board (10 marks)
 def randomNewBoard(M, N):
