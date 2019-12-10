@@ -187,6 +187,7 @@ def canPlacePole(row, col, pole, workingBoard):
     #     return False
     return all(vals)
 
+
 # Test it
 # print(canPlacePole(1, 1, '+', workingBoard))
 # print(canPlacePole(2, 3, '-', workingBoard))
@@ -317,6 +318,7 @@ def orientationsGenerator(M, N):
 
     return initMatrix
 
+
 # Used in orientationGenerator to 1000 times shuffle matrix
 def shuffle(initMatrix):
     row = random.randint(0, M - 1)
@@ -371,6 +373,7 @@ def shuffle(initMatrix):
     # print("oppositeCol2 : " + str(oppositeCol2))
 
     return initMatrix
+
 
 # Test it
 # M = 4
@@ -453,11 +456,390 @@ def randomNewBoard(M, N):
 
     return positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard
 
+
 # Test it
-M = 6
-N = 5
-positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard = randomNewBoard(M, N)
-printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
+# M = 6
+# N = 5
+# positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard = randomNewBoard(M, N)
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
 
 ######################################################
 # Part D: Decomposition, Variable names and code Documentation (10 marks)
+
+
+
+# Assignment 2
+# Part A: Helper functions (10 marks)
+# Task 1: Converting a set into a board (5 Marks)
+def setToBoard(set, orientations):
+    global M
+    global N
+    workingBoard = [[0 for x in range(N)] for y in range(M)]
+    for x in range(M):
+        for y in range(N):
+            workingBoard[x][y] = 'E'
+
+    # for dataSet in range(len(set)):
+    dataSet = 0
+
+    try:
+        for x in range(M):
+            for y in range(N):
+                if workingBoard[x][y] == 'E':
+                    if set[dataSet] == 0:
+                        if orientations[x][y] == 'L':
+                            workingBoard[x][y] = '+'
+                            workingBoard[x][y + 1] = '-'
+                            dataSet += 1
+                            if dataSet >= len(set):
+                                raise StopIteration
+                        elif orientations[x][y] == 'T':
+                            workingBoard[x][y] = '+'
+                            workingBoard[x + 1][y] = '-'
+                            dataSet += 1
+                            if dataSet >= len(set):
+                                raise StopIteration
+                    elif set[dataSet] == 1:
+                        if orientations[x][y] == 'L':
+                            workingBoard[x][y] = '-'
+                            workingBoard[x][y + 1] = '+'
+                            dataSet += 1
+                            if dataSet >= len(set):
+                                raise StopIteration
+                        elif orientations[x][y] == 'T':
+                            workingBoard[x][y] = '-'
+                            workingBoard[x + 1][y] = '+'
+                            dataSet += 1
+                            if dataSet >= len(set):
+                                raise StopIteration
+                    elif set[dataSet] == 2:
+                        if orientations[x][y] == 'L':
+                            workingBoard[x][y] = 'X'
+                            workingBoard[x][y + 1] = 'X'
+                            dataSet += 1
+                            if dataSet >= len(set):
+                                raise StopIteration
+                        elif orientations[x][y] == 'T':
+                            workingBoard[x][y] = 'X'
+                            workingBoard[x + 1][y] = 'X'
+                            dataSet += 1
+                            if dataSet >= len(set):
+                                raise StopIteration
+    except StopIteration:
+        pass
+    return workingBoard
+
+# Test it
+# M = 6
+# N - 5
+# positivesColumn = [-1, -1, -1, -1, -1]
+# negativesColumn = [-1, -1, -1, -1, -1]
+# positivesRow = [-1, -1, -1, -1, -1, -1]
+# negativesRow = [-1, -1, -1, -1, -1, -1]
+# orientations = [['T', 'L', 'R', 'L', 'R'],
+#                 ['B', 'T', 'T', 'L', 'R'],
+#                 ['T', 'B', 'B', 'T', 'T'],
+#                 ['B', 'L', 'R', 'B', 'B'],
+#                 ['L', 'R', 'L', 'R', 'T'],
+#                 ['L', 'R', 'L', 'R', 'B']]
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, orientations)
+# set=[0,1,1,0]
+# workingBoard= setToBoard(set,orientations)
+# print("###########################################")
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
+# set =[0,2,0,2,1,0,2]
+# workingBoard= setToBoard(set,orientations)
+# print("###########################################")
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations,
+# workingBoard)
+
+# Task 2: Check solution (5 marks)
+def isSolution(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard):
+    check = True
+    for x in range(M):
+        for y in range(N):
+            if workingBoard[x][y] == '+':
+                # down
+                try:
+                    if (x+1) <= M:
+                        if workingBoard[x+1][y] == '+':
+                            check = False
+                except:
+                    pass
+
+                # right
+                try:
+                    if (y + 1) <= N:
+                        if workingBoard[x][y+1] == '+':
+                            check = False
+                except:
+                    pass
+
+                # up
+                try:
+                    if (x - 1) >= 0:
+                        if workingBoard[x-1][y] == '+':
+                            check = False
+                except:
+                    pass
+
+                # left
+                try:
+                    if (y - 1) >= 0:
+                        if workingBoard[x][y-1] == '+':
+                            check = False
+                except:
+                    print("Error")
+                    pass
+
+            elif workingBoard[x][y] == '-':
+                # down
+                try:
+                    if (x + 1) <= M:
+                        if workingBoard[x+1][y] == '-':
+                            check = False
+                except:
+                    pass
+
+                # right
+                try:
+                    if (y + 1) <= N:
+                        if workingBoard[x][y+1] == '-':
+                            check = False
+                except:
+                    pass
+
+                # up
+                try:
+                    if (x - 1) >= 0:
+                        if workingBoard[x-1][y] == '-':
+                            check = False
+                except:
+                    pass
+
+                # left
+                try:
+                    if (y - 1) >= 0:
+                        if workingBoard[x][y-1] == '-':
+                          check = False
+                except:
+                    pass
+
+    if check:
+        for x in range(M):
+            if positivesRow[x] != -1:
+                count = poleCount('r', x, '+', workingBoard)
+                if count == 0:
+                    count = -1
+                if positivesRow[x] != count:
+                    check = False
+
+            if negativesRow[x] != -1:
+                negativeCount = poleCount('r', x, '-', workingBoard)
+                if negativeCount == 0:
+                    negativeCount = -1
+                if negativesRow[x] != negativeCount:
+                    check = False
+
+        for y in range(N):
+            if positivesColumn[y] != -1:
+                count = poleCount('c', y, '+', workingBoard)
+                if count == 0:
+                    count = -1
+                if positivesColumn[y] != count:
+                    check = False
+
+            if negativesColumn[y] != -1:
+                negativeCount = poleCount('c', y, '-', workingBoard)
+                if negativeCount == 0:
+                    negativeCount = -1
+                if negativesColumn[y] != negativeCount:
+                    check = False
+    return check
+
+# Test it
+# M = 2
+# N = 3
+# positivesColumn= [1,1,1]
+# negativesColumn= [1,1,1]
+# positivesRow= [-1,-1]
+# negativesRow= [-1,-1]
+# orientations= [['L', 'R', 'T'],
+#                ['L', 'R', 'B']]
+# workingBoard = [
+#             ['+', '-', '-'],
+#             ['-', '+', '+']
+# ]
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
+# print(isSolution(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard))
+#
+# workingBoard = [
+#     ['+', '-', '+'],
+#     ['-', '+', '-']
+# ]
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard)
+# print(isSolution(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, workingBoard))
+
+def backtrack(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, partial):
+    partial = [[0 for x in range(N)] for y in range(M)]
+    for x in range(M):
+        for y in range(N):
+            partial[x][y] = 'E'
+
+    if not solveBacktrack(partial, 0, 0, positivesColumn, negativesColumn, positivesRow, negativesRow, partial):
+        print("Cannot solve")
+        return
+
+    return partial
+
+def solveBacktrack(board, row, col, positivesColumn, negativesColumn, positivesRow, negativesRow, orientations):
+
+    return False
+
+# // Main function to solve the Bipolar Magnets puzzle
+# 	private static boolean solveMagnetPuzzle(char board[][], int row, int col,
+# 				int top[], int left[], int bottom[], int right[], char str[][])
+# 	{
+# 		// if we have reached last cell
+# 		if (row >= M - 1 && col >= N - 1)
+# 		{
+# 			return validateConfiguration(board, top, left, bottom, right);
+# 		}
+#
+# 		// if last column of current row is already processed,
+# 		// go to next row, first column
+# 		if (col >= N)
+# 		{
+# 			col = 0;
+# 			row = row + 1;
+# 		}
+#
+# 		// if current cell contains 'R' or 'B' (end of horizontal
+# 		// or vertical slot) recur for next cell
+# 		if (str[row][col] == 'R' || str[row][col] == 'B')
+# 		{
+# 			if (solveMagnetPuzzle(board, row, col + 1, top,
+# 					left, bottom, right, str))
+# 				return true;
+# 		}
+#
+# 		// if horizontal slot contains L and R
+# 		if (str[row][col] == 'L' && str[row][col + 1] == 'R')
+# 		{
+# 			// put ('+', '-') pair and recur
+# 			if (isSafe(board, row, col, '+', top, left, bottom, right) &&
+# 				isSafe(board, row, col + 1, '-', top, left, bottom, right))
+# 			{
+# 				board[row][col] = '+';
+# 				board[row][col + 1] = '-';
+#
+# 				if (solveMagnetPuzzle(board, row, col + 2,
+# 						top, left, bottom, right, str))
+# 					return true;
+#
+# 				// if it doesn't lead to a solution, backtrack
+# 				board[row][col] = 'X';
+# 				board[row][col + 1] = 'X';
+# 			}
+#
+# 			// put ('-', '+') pair and recur
+# 			if (isSafe(board, row, col, '-', top, left, bottom, right) &&
+# 				isSafe(board, row, col + 1, '+', top, left, bottom, right))
+# 			{
+# 				board[row][col] = '-';
+# 				board[row][col + 1] = '+';
+#
+# 				if (solveMagnetPuzzle(board, row, col + 2,
+# 						top, left, bottom, right, str))
+# 					return true;
+#
+# 				// if it doesn't lead to a solution, backtrack
+# 				board[row][col] = 'X';
+# 				board[row][col + 1] = 'X';
+# 			}
+# 		}
+#
+# 		// if vertical slot contains T and B
+# 		if (str[row][col] == 'T' && str[row + 1][col] == 'B')
+# 		{
+# 			// put ('+', '-') pair and recur
+# 			if (isSafe(board, row, col, '+', top, left, bottom, right) &&
+# 				isSafe(board, row + 1, col, '-', top, left, bottom, right))
+# 			{
+# 				board[row][col] = '+';
+# 				board[row + 1][col] = '-';
+#
+# 				if (solveMagnetPuzzle(board, row, col + 1,
+# 						top, left, bottom, right, str))
+# 					return true;
+#
+# 				// if it doesn't lead to a solution, backtrack
+# 				board[row][col] = 'X';
+# 				board[row + 1][col] = 'X';
+# 			}
+#
+# 			// put ('-', '+') pair and recur
+# 			if (isSafe(board, row, col, '-', top, left, bottom, right) &&
+# 				isSafe(board, row + 1, col, '+', top, left, bottom, right))
+# 			{
+# 				board[row][col] = '-';
+# 				board[row + 1][col] = '+';
+#
+# 				if (solveMagnetPuzzle(board, row, col + 1,
+# 						top, left, bottom, right, str))
+# 					return true;
+#
+# 				// if it doesn't lead to a solution, backtrack
+# 				board[row][col] = 'X';
+# 				board[row + 1][col] = 'X';
+# 			}
+# 		}
+#
+# 		// ignore current cell and recur
+# 		if (solveMagnetPuzzle(board, row, col + 1,
+# 				top, left, bottom, right, str))
+# 			return true;
+#
+# 		// if no solution is possible, return false
+# 		return false;
+# 	}
+#
+# 	public static void solveMagnetPuzzle(int top[], int left[], int bottom[],
+# 							int right[], char str[][])
+# 	{
+# 		// to store result
+# 		char board[][] = new char[M][N];
+#
+# 		// initalize all cells by 'X'
+# 		for (int i = 0; i < M; i++)
+# 			Arrays.fill(board[i], 'X');
+#
+# 		// start from (0, 0) cell
+# 		if (!solveMagnetPuzzle(board, 0, 0, top, left, bottom, right, str))
+# 		{
+# 			System.out.println("Solution does not exist");
+# 			return;
+# 		}
+#
+# 		// print result if given configuration is solvable
+# 		printSolution(board);
+# 	}
+
+# M = 4
+# N - 5
+# positivesColumn= [2, 1, 1, -1, -1]
+# negativesColumn= [1, -1, -1, 2, 1]
+# positivesRow= [2, -1, -1, 1]
+# negativesRow= [1, 3, -1, 1]
+# orientations= [['T', 'L', 'R', 'L', 'R'],
+#                ['B', 'L', 'R', 'L', 'R'],
+#                ['L', 'R', 'L', 'R', 'T'],
+#                ['L', 'R', 'L', 'R', 'B']
+#               ]
+#
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, orientations)
+# print("#############################################")
+# partial=[]
+# solution = []
+# solution = backtrack(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, partial)
+# printBoard(positivesColumn, negativesColumn, positivesRow, negativesRow, orientations, solution)
